@@ -1,22 +1,20 @@
-import chalk from 'chalk'
-import type { JsonObject, LogCategory } from './types/bunnyLog'
-import { colorizeJson } from './utils/colorizeJson'
-import { categoryColors } from './config/colors'
+import chalk from "chalk";
+import { colorizeJson } from "./utils/colorizeJson.js";
+import { categoryColors } from "./config/colors.js";
 
-// Define a custom log function for categorized logs
-const bunnyLog = (category: LogCategory, ...args: unknown[]) => {
-	const color = categoryColors.get(category) || chalk.white
+export function bunnyLog(category, ...args) {
+	const color = categoryColors.get(category) || chalk.white;
 
 	const formattedMessage = args
 		.map((arg) => {
-			if (typeof arg === 'object' && arg !== null) {
-				return colorizeJson(arg as JsonObject)
+			if (typeof arg === "object" && arg !== null) {
+				return colorizeJson(arg);
 			}
-			return String(arg)
+			return String(arg);
 		})
-		.join(' ')
+		.join(" ");
 
-	const actionMap: Record<LogCategory, () => void> = {
+	const actionMap = {
 		server: () =>
 			console.log(
 				`${chalk.bold(`[${category.toUpperCase()}]`)} - ${color(formattedMessage)}`,
@@ -43,14 +41,12 @@ const bunnyLog = (category: LogCategory, ...args: unknown[]) => {
 				`${chalk.bold(`[${category.toUpperCase()}]`)} - ${color(formattedMessage)}`,
 			),
 		object: () => console.log(formattedMessage),
-	}
+	};
 
-	const action = actionMap[category]
+	const action = actionMap[category];
 	if (!action)
 		return console.log(
-			`${chalk.bold('[UNKNOWN]')} - ${chalk.white(formattedMessage)}`,
-		)
-	action()
+			`${chalk.bold("[UNKNOWN]")} - ${chalk.white(formattedMessage)}`,
+		);
+	action();
 }
-
-export { bunnyLog }
