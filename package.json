@@ -1,18 +1,18 @@
 {
     "name": "bunny-log",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "description": "A customizable clean and fast logger for Node.js 🐇",
-    "main": "src/index.ts",
+    "main": "src/index.js",
     "types": "src/types/index.d.ts",
     "type": "module",
     "scripts": {
-        "start": "bun run src/index.ts",
+        "start": "bun run src/index.js",
         "build": "tsc",
         "test": "bun test"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yourusername/bunny-log.git"
+        "url": "git+https://github.com/rabbit-tale-co/bunny-log.git"
     },
     "keywords": [
         "logging",
