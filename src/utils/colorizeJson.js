@@ -1,5 +1,10 @@
 import chalk from "chalk";
 
+/**
+ * A map that associates JavaScript data types with corresponding chalk color functions for console output.
+ *
+ * @type {Map<string, Function>}
+ */
 const typeColors = new Map([
 	["string", chalk.green],
 	["number", chalk.yellow],
@@ -9,6 +14,18 @@ const typeColors = new Map([
 	["array", chalk.white],
 ]);
 
+/**
+ * Recursively colorizes a JSON object for console output, formatting strings, numbers, booleans, nulls,
+ * objects, and arrays with specific colors.
+ *
+ * @param {any} json - The JSON data to be colorized. Can be of type string, number, boolean, null, array, or object.
+ * @param {number} [indentLevel=0] - The current level of indentation, used for formatting nested objects and arrays.
+ * @returns {string} - A colorized and formatted string representation of the input JSON.
+ *
+ * @example
+ * const data = { name: "Alice", age: 30, isAdmin: true, preferences: { theme: "dark" } };
+ * console.log(colorizeJson(data));
+ */
 export function colorizeJson(json, indentLevel = 0) {
 	const indent = "  ".repeat(indentLevel);
 
