@@ -42,12 +42,7 @@ type LogCategory =
  * bunnyLog('error', 'An error occurred:', new Error('Sample error'));
  * bunnyLog('object', { key: 'value', anotherKey: 42 });
  */
-declare function bunnyLog(category: LogCategory, ...args: unknown[]): void
-
-export {
-	bunnyLog,
-	type LogCategory,
-	type JsonValue,
-	type JsonObject,
-	type JsonArray,
-}
+export declare function bunnyLog(
+	category: LogCategory,
+	...args: unknown[]
+): void
