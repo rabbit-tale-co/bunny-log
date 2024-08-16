@@ -7,7 +7,7 @@
     "type": "module",
     "scripts": {
         "start": "bun run src/index.js",
-        "build": "tsc",
+        "build": "bun build ./src/index.tsx --outdir ./build --minify",
         "test": "bun test"
     },
     "repository": {
