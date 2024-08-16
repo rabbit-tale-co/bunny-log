@@ -1,6 +1,6 @@
 {
     "name": "bunny-log",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "A customizable clean and fast logger for Node.js 🐇",
     "main": "src/index.js",
     "types": "src/types/index.d.ts",

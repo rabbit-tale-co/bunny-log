@@ -23,14 +23,14 @@ import { bunnyLog } from './bunnyLog';
 
 ### Logging Messages
 ```Javascript
-bunnyLog('server', 'This is server message.')
-bunnyLog('info', 'This is an informational message.');
-bunnyLog('error', 'An error occurred:', new Error('Sample error'));
-bunnyLog('success', 'Operation completed successfully.');
-bunnyLog('warning', 'This is a warning message.');
-bunnyLog('api', 'API request received');
-bunnyLog('database', 'Database message.')
-bunnyLog('object', { key: 'value', anotherKey: 42 });
+bunnyLog.server( 'This is server message.')
+bunnyLog.info('This is an informational message.');
+bunnyLog.error('An error occurred:', new Error('Sample error'));
+bunnyLog.success('Operation completed successfully.');
+bunnyLog.warning('This is a warning message.');
+bunnyLog.api('API request received');
+bunnyLog.database('Database message.')
+bunnyLog.object({ key: 'value', anotherKey: 42 });
 ```
 ### Example Outputs
 
