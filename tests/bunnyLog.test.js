@@ -1,6 +1,7 @@
 import stripAnsi from "strip-ansi";
 import { describe, it, expect, beforeEach, afterEach, spyOn } from "bun:test";
 import { bunnyLog } from "../src/bunnyLog";
+import chalk from "chalk";
 
 describe("bunnyLog", () => {
 	let consoleSpy;
@@ -68,16 +69,25 @@ describe("bunnyLog", () => {
 		expect(actualLogOutput).toContain("DATABASE");
 	});
 
-	it("should log warning message correctly", () => {
-		bunnyLog.warning("Test warning log");
+	it("should log warn message correctly", () => {
+		bunnyLog.warn("Test warning log");
 		// bunnyLog('warning', 'Test warning log')
 
 		const actualLogOutput = stripAnsi(consoleSpy.mock.calls[0][0]);
-		expect(actualLogOutput).toContain("WARNING");
+		expect(actualLogOutput).toContain("WARN");
+	});
+
+	it("should log custom category correctly", () => {
+		bunnyLog.addCategory("debug", chalk.hex("#dc23da"));
+
+		bunnyLog.debug("Test debug log");
+
+		const actualLogOutput = stripAnsi(consoleSpy.mock.calls[0][0]);
+		expect(actualLogOutput).toContain("DEBUG");
 	});
 
 	it("should log object message correctly", () => {
-		bunnyLog.object({
+		bunnyLog.info({
 			string: "value",
 			number: 42,
 			boolean: true,
@@ -109,6 +119,6 @@ describe("bunnyLog", () => {
 		// })
 
 		const actualLogOutput = stripAnsi(consoleSpy.mock.calls[0][0]);
-		expect(actualLogOutput).toContain("OBJECT");
+		expect(actualLogOutput).toContain("INFO");
 	});
 });
