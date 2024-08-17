@@ -39,7 +39,12 @@ export const bunnyLog = {
 	error: (...args) => log("error", ...args),
 	info: (...args) => log("info", ...args),
 	success: (...args) => log("success", ...args),
-	warning: (...args) => log("warning", ...args),
+	warn: (...args) => log("warn", ...args),
 	api: (...args) => log("api", ...args),
-	object: (...args) => log("object", ...args),
+
+	// Dynamic method to add new logging category
+	addCategory: (category, color) => {
+		categoryColors.set(category, color);
+		bunnyLog[category] = (...args) => log(category, ...args);
+	},
 };
