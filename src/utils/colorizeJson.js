@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import { bunnyLog } from '../bunnyLog'
 
 /**
  * A map that associates JavaScript data types with corresponding chalk color functions for console output.
@@ -10,9 +11,10 @@ const typeColors = new Map([
 	['number', chalk.yellow],
 	['boolean', chalk.blue],
 	['null', chalk.red],
-	['object', chalk.white],
-	['key', chalk.gray],
+	['undefined', chalk.red],
+	['object', chalk.magenta],
 	['array', chalk.white],
+	['key', chalk.gray],
 	['brackets', chalk.white],
 ])
 
@@ -49,18 +51,31 @@ export function colorizeJson(json, indentLevel = 0) {
 	 * @returns {string} - The colorized string representation of the value.
 	 */
 	const colorize = (type, value) => {
-		const colorFn = typeColors.get(type) // Get the corresponding color function
-		return colorFn ? colorFn(value.toString()) : value.toString() // Apply color or return the plain value if no color function found
+		// Ensure value is not undefined or null before converting to string
+		if (value === undefined || value === null) return String(value)
+
+		const colorFn = typeColors.get(type)
+
+		try {
+			return colorFn ? colorFn(value.toString()) : value.toString()
+		} catch {
+			bunnyLog.error('Error colorizing value:', value)
+			return String(value)
+		}
+	}
+
+	if (json === undefined) {
+		return colorize('undefined', 'undefined')
 	}
 
 	// Handle null values explicitly
 	if (json === null) {
-		return typeColors.get('null')('null')
+		return colorize('null', 'null')
 	}
 
 	// Handle arrays
 	if (Array.isArray(json)) {
-		const color = typeColors.get('brackets')
+		const color = typeColors.get('array')
 		if (json.length < 4) {
 			// Display array in a single line if it has 3 or fewer elements
 			const items = json.map((item) => colorizeJson(item, 0)).join(', ')
