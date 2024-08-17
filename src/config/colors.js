@@ -16,6 +16,6 @@ export const categoryColors = new Map([
 	["error", chalk.red],
 	["info", chalk.blue],
 	["success", chalk.greenBright],
-	["warning", chalk.hex("#F8A85E")],
+	["warn", chalk.hex("#F8A85E")],
 	["api", chalk.magenta],
 ]);
