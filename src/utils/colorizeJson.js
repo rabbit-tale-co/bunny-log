@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { bunnyLog } from '../bunnyLog'
+import { bunnyLog } from '../bunnyLog.js'
 
 /**
  * A map that associates JavaScript data types with corresponding chalk color functions for console output.

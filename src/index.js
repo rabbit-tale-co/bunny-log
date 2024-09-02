@@ -1,3 +1,3 @@
-import { bunnyLog } from "./bunnyLog.js";
+import { bunnyLog } from './bunnyLog.js'
 
-export { bunnyLog };
+export { bunnyLog }

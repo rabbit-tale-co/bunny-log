@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk from 'chalk'
 
 /**
  * A map that associates logging categories with corresponding chalk color functions for console output.
@@ -11,11 +11,11 @@ import chalk from "chalk";
  * console.log(color('This is an error message.'));
  */
 export const categoryColors = new Map([
-	["server", chalk.green],
-	["database", chalk.yellow],
-	["error", chalk.red],
-	["info", chalk.blue],
-	["success", chalk.greenBright],
-	["warn", chalk.hex("#F8A85E")],
-	["api", chalk.magenta],
-]);
+	['server', chalk.green],
+	['database', chalk.yellow],
+	['error', chalk.red],
+	['info', chalk.blue],
+	['success', chalk.greenBright],
+	['warn', chalk.hex('#F8A85E')],
+	['api', chalk.magenta],
+])

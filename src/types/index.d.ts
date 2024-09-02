@@ -1,10 +1,17 @@
-import chalk from "chalk";
+import type chalk from "chalk";
 
 /**
  * Represents a valid JSON value, which can be a string, number, boolean, null, object, or array.
  * This type is useful for ensuring that only valid JSON-compatible values are used.
  */
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+type JsonValue =
+	| string
+	| number
+	| boolean
+	| null
+	| unknown
+	| JsonObject
+	| JsonArray;
 
 /**
  * Represents a JSON object, where each key is a string and the value is a valid JSON value.
@@ -34,22 +41,34 @@ type LogCategory =
 /**
  * Represents the structure of the logging function for a single category.
  */
-type LogFunction = (...args: (string | JsonObject | Error | object)[]) => void;
+type LogFunction = (
+	...args: (
+		| string
+		| number
+		| null
+		| undefined
+		| boolean
+		| JsonObject
+		| Error
+		| object
+	)[]
+) => void;
 
 /**
  * Logs a message to the console for a specific category.
  *
+ * TODO: set LogFunction to all in better way
  * Each category method (e.g., bunnyLog.server, bunnyLog.error) accepts multiple arguments,
  * which can be strings, objects, or errors, and logs them with appropriate formatting.
  */
 interface BunnyLog {
-	server: (...args: (string | JsonObject | Error | object)[]) => void;
-	database: (...args: (string | JsonObject | Error | object)[]) => void;
-	api: (...args: (string | JsonObject | Error | object)[]) => void;
-	error: (...args: (string | JsonObject | Error | object)[]) => void;
-	info: (...args: (string | JsonObject | Error | object)[]) => void;
-	success: (...args: (string | JsonObject | Error | object)[]) => void;
-	warn: (...args: (string | JsonObject | Error | object)[]) => void;
+	server: LogFunction;
+	database: LogFunction;
+	api: LogFunction;
+	error: LogFunction;
+	info: LogFunction;
+	success: LogFunction;
+	warn: LogFunction;
 
 	// Method to add a new category dynamically
 	addCategory: (category: string, color: ReturnType<typeof chalk>) => void;
