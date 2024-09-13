@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { colorizeJson } from './utils/colorizeJson.js'
 import { categoryColors } from './config/colors.js'
+import { bunnyTable } from './utils/table.js'
 
 function log(category, ...args) {
 	const color = categoryColors.get(category) || chalk.white
@@ -13,7 +14,6 @@ function log(category, ...args) {
 	const formattedMessage = args
 		.map((arg) => {
 			if (arg instanceof Error) {
-				// Extract the message and handle custom error properties if needed
 				return arg.message
 			}
 			if (typeof arg === 'object' && arg !== null) {
@@ -25,8 +25,9 @@ function log(category, ...args) {
 
 	const logMethod = category === 'error' ? console.error : console.log
 
+	// Always start message on new line
 	logMethod(
-		`${formattedTime} | [${color(category.toUpperCase())}] - ${color(formattedMessage)}`
+		`${formattedTime} | [${color(category.toUpperCase())}] -\n${color(formattedMessage)}`
 	)
 }
 
@@ -47,4 +48,7 @@ export const bunnyLog = {
 		categoryColors.set(category, color)
 		bunnyLog[category] = (...args) => log(category, ...args)
 	},
+
+	// Method to log data in a table format
+	table: (data, options = {}) => log('table', bunnyTable(data, options)),
 }
