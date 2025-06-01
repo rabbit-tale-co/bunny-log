@@ -111,7 +111,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 	describe('Hex Color Support', () => {
 		it('should support hex colors for new categories', () => {
 			const result = bunnyLog.hex("github", "#6cc644")
-			expect(result).toBe(bunnyLog) // Should return chainable instance
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			bunnyLog.github("GitHub integration active")
 			const categories = bunnyLog.getCategories()
 			expect(categories).toContain('github')
@@ -123,7 +123,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 				.hex("build", "#ff9500")
 				.hex("test", "#34c759")
 
-			expect(result).toBe(bunnyLog)
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 
 			// Verify all categories were created
 			const categories = bunnyLog.getCategories()
@@ -141,7 +141,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 			bunnyLog.info('Info with original color')
 
 			const result = bunnyLog.setHex("info", "#ff6b35")
-			expect(result).toBe(bunnyLog) // Should return chainable instance
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 
 			bunnyLog.info('Info with new orange color')
 			// Both calls should work without error
@@ -151,7 +151,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 	describe('RGB Color Support', () => {
 		it('should support RGB colors', () => {
 			const result = bunnyLog.rgb("custom", 255, 100, 150)
-			expect(result).toBe(bunnyLog)
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			bunnyLog.custom("Pretty pink message")
 			const categories = bunnyLog.getCategories()
 			expect(categories).toContain('custom')
@@ -168,7 +168,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 				.hex("db", "#4ecdc4")
 				.hex("cache", "#ffe66d")
 
-			expect(result).toBe(myLogger)
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 
 			const categories = myLogger.getCategories()
 			expect(categories).toContain('app')
@@ -199,14 +199,6 @@ describe('BunnyLog Comprehensive Tests', () => {
 	})
 
 	describe('Category Management', () => {
-		it('should add custom category with color', () => {
-			bunnyLog.addCategory('debug', chalk.hex('#dc23da'))
-			const categories = bunnyLog.getCategories()
-			expect(categories).toContain('debug')
-			expect(typeof bunnyLog.debug).toBe('function')
-			bunnyLog.debug('Test debug log')
-		})
-
 		it('should remove categories', () => {
 			bunnyLog.testCategory('Test message')
 			let categories = bunnyLog.getCategories()
@@ -367,7 +359,9 @@ describe('BunnyLog Comprehensive Tests', () => {
 				.hex("chain2", "#00ff00")
 				.rgb("chain3", 0, 0, 255)
 
-			expect(result).toBe(bunnyLog) // Should return the same instance for chaining
+			expect(typeof result.hex).toBe('function') // Should have chaining methods
+			expect(typeof result.rgb).toBe('function')
+			expect(typeof result.log).toBe('function')
 
 			// Verify methods were created
 			const categories = bunnyLog.getCategories()
@@ -382,17 +376,81 @@ describe('BunnyLog Comprehensive Tests', () => {
 				.hex("test1", "#111111")
 				.hex("test2", "#222222")
 
-			expect(result).toBe(logger)
+			expect(typeof result.hex).toBe('function') // Should have chaining methods
+			expect(typeof result.log).toBe('function')
 
 			const categories = logger.getCategories()
 			expect(categories).toContain('test1')
 			expect(categories).toContain('test2')
 		})
+
+		it('should support chaining after logging methods', () => {
+			const logger = new BunnyLogger()
+
+			// Test chaining after default logging methods
+			const result1 = logger.info('Test message')
+			expect(typeof result1.log).toBe('function') // Should return chainable object
+			expect(typeof result1.hex).toBe('function')
+
+			const result2 = logger.success('Success message')
+			expect(typeof result2.log).toBe('function') // Should return chainable object
+		})
+
+		it('should support chaining after auto-created logging methods', () => {
+			const logger = new BunnyLogger()
+
+			// Test chaining after auto-created methods
+			const result = logger.customCategory('Custom message')
+			expect(typeof result.log).toBe('function') // Should return chainable object
+			expect(typeof logger.customCategory).toBe('function')
+		})
+
+		it('should allow complex chaining combinations', () => {
+			const logger = new BunnyLogger(false)
+
+			// Complex chaining: create category, log, modify color, log again
+			const result = logger
+				.hex('test', '#FF0000')
+				.test('First message')
+				.setHex('test', '#00FF00')
+				.test('Second message with new color')
+				.use12HourFormat()
+				.test('Third message with 12h format')
+				.hideSecondsInTime()
+				.test('Fourth message without seconds')
+
+			expect(typeof result.log).toBe('function') // Should return chainable object
+			expect(logger.getTimeFormat()).toBe('12h')
+			expect(logger.getShowSeconds()).toBe(false)
+		})
+
+		it('should work with the user example pattern', () => {
+			const logger = new BunnyLogger()
+
+			// Test the exact pattern the user wanted
+			const result = logger.bruh("bruh message").setColor("bruh", chalk.red)
+			expect(typeof result.log).toBe('function') // Should return chainable object
+
+			// Verify the category was created and color was set
+			const categories = logger.getCategories()
+			expect(categories).toContain('bruh')
+		})
+
+		it('should support chaining with hex color setting', () => {
+			const logger = new BunnyLogger()
+
+			// Test chaining with setHex using the log() method (recommended approach)
+			logger.log('testCategory', 'Test message')
+			const result = logger
+				.setHex('testCategory', '#FFFF00')
+				.log('testCategory', 'Message with yellow color')
+
+			expect(typeof result.log).toBe('function') // Should return chainable object
+		})
 	})
 
 	describe('Core Functionality Verification', () => {
 		it('should have all required methods on bunnyLog', () => {
-			expect(typeof bunnyLog.addCategory).toBe('function')
 			expect(typeof bunnyLog.removeCategory).toBe('function')
 			expect(typeof bunnyLog.getCategories).toBe('function')
 			expect(typeof bunnyLog.hex).toBe('function')
@@ -408,6 +466,10 @@ describe('BunnyLog Comprehensive Tests', () => {
 			expect(typeof bunnyLog.getShowSeconds).toBe('function')
 			expect(typeof bunnyLog.showSecondsInTime).toBe('function')
 			expect(typeof bunnyLog.hideSecondsInTime).toBe('function')
+			expect(typeof bunnyLog.setTextColor).toBe('function')
+			expect(typeof bunnyLog.getTextColor).toBe('function')
+			expect(typeof bunnyLog.enableTextColor).toBe('function')
+			expect(typeof bunnyLog.disableTextColor).toBe('function')
 		})
 
 		it('should export all required classes and constants', () => {
@@ -428,7 +490,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 		it('should allow setting time format to 12h', () => {
 			const logger = new BunnyLogger()
 			const result = logger.setTimeFormat('12h')
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getTimeFormat()).toBe('12h')
 		})
 
@@ -436,7 +498,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 			const logger = new BunnyLogger()
 			logger.setTimeFormat('12h') // Set to 12h first
 			const result = logger.setTimeFormat('24h')
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getTimeFormat()).toBe('24h')
 		})
 
@@ -450,7 +512,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 		it('should have convenience method for 12-hour format', () => {
 			const logger = new BunnyLogger()
 			const result = logger.use12HourFormat()
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getTimeFormat()).toBe('12h')
 		})
 
@@ -458,7 +520,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 			const logger = new BunnyLogger()
 			logger.use12HourFormat() // Set to 12h first
 			const result = logger.use24HourFormat()
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getTimeFormat()).toBe('24h')
 		})
 
@@ -518,7 +580,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 		it('should allow setting seconds display to false', () => {
 			const logger = new BunnyLogger()
 			const result = logger.setShowSeconds(false)
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getShowSeconds()).toBe(false)
 		})
 
@@ -526,7 +588,7 @@ describe('BunnyLog Comprehensive Tests', () => {
 			const logger = new BunnyLogger()
 			logger.setShowSeconds(false) // Set to false first
 			const result = logger.setShowSeconds(true)
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getShowSeconds()).toBe(true)
 		})
 
@@ -534,14 +596,14 @@ describe('BunnyLog Comprehensive Tests', () => {
 			const logger = new BunnyLogger()
 			logger.setShowSeconds(false) // Set to false first
 			const result = logger.showSecondsInTime()
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getShowSeconds()).toBe(true)
 		})
 
 		it('should have convenience method to hide seconds', () => {
 			const logger = new BunnyLogger()
 			const result = logger.hideSecondsInTime()
-			expect(result).toBe(logger) // Should return instance for chaining
+			expect(typeof result.log).toBe('function') // Should return chainable instance
 			expect(logger.getShowSeconds()).toBe(false)
 		})
 

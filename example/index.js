@@ -1,29 +1,41 @@
 import { bunnyLog, BunnyLogger, Table, FORMAT_UNICODE, FORMAT_DEFAULT } from '../src/index.js';
 
-console.log("=== 🐰 BunnyLog Advanced Examples ===\n");
+console.log("=== 🐰 BunnyLog Simple & Clean Examples ===\n");
 
-// ✨ MAGIC: Auto-created categories! No need for bunnyLog.addCategory()
-console.log("=== 🎯 Auto-Category Creation (MAGIC!) ===");
-bunnyLog.info("Standard info message");
-bunnyLog.success("Standard success message");
+// ✨ MAGIC: Auto-created categories with smart colors!
+console.log("=== 🎯 Auto-Category Creation with Smart Colors ===");
+bunnyLog.log("info", "Info with automatic blue color");
+bunnyLog.log("success", "Success with automatic green color");
+bunnyLog.log("error", "Error with automatic red color");
+bunnyLog.log("warn", "Warning with automatic yellow color");
 
-// 🪄 Just use ANY category name - it's auto-created!
-bunnyLog.discord("Discord bot message");  // Auto-created!
-bunnyLog.payment("Payment processed");    // Auto-created!
-bunnyLog.auth("User authenticated");      // Auto-created!
-bunnyLog.myCustomCategory("This just works!"); // Auto-created!
+// 🪄 Custom categories auto-created too!
+bunnyLog.log("server", "Server message with cyan color"); // Auto-created with cyan
 
 console.log("Available categories after auto-creation:", bunnyLog.getCategories());
 
+// 🎨 Text coloring demonstration
+console.log("\n=== 🎨 Text Coloring Examples ===");
+bunnyLog.log("info", "Default: category colored, text plain");
+
+bunnyLog.enableTextColor();
+bunnyLog.log("info", "Enabled: both category AND text are colored!");
+bunnyLog.log("success", "Success message with colored text");
+bunnyLog.log("error", "Error message with colored text");
+bunnyLog.log("warn", "Warning message with colored text");
+
+bunnyLog.disableTextColor();
+bunnyLog.log("info", "Disabled: back to plain text with colored category");
+
 // 🎨 Easy hex colors!
 console.log("\n=== 🌈 Hex Colors (Super Easy!) ===");
-bunnyLog.hex("github", "#6cc644").github("GitHub integration active");
-bunnyLog.hex("discord", "#5865f2").discord("Discord bot online");
-bunnyLog.hex("stripe", "#635bff").stripe("Payment webhook received");
-bunnyLog.hex("warning", "#ff6b35").warning("Custom orange warning");
+bunnyLog.hex("github", "#6cc644").log("github", "GitHub integration active");
+bunnyLog.hex("discord", "#5865f2").log("discord", "Discord bot online");
+bunnyLog.hex("stripe", "#635bff").log("stripe", "Payment webhook received");
+bunnyLog.hex("warning", "#ff6b35").log("warning", "Custom orange warning");
 
 // 🎨 RGB colors too!
-bunnyLog.rgb("custom", 255, 100, 150).custom("Pretty pink message");
+bunnyLog.rgb("custom", 255, 100, 150).log("custom", "Pretty pink message");
 
 // 🔗 Chainable methods!
 bunnyLog
@@ -31,9 +43,9 @@ bunnyLog
 	.hex("build", "#ff9500")
 	.hex("test", "#34c759");
 
-bunnyLog.deploy("Deployment started");
-bunnyLog.build("Build completed");
-bunnyLog.test("Tests passing");
+bunnyLog.log("deploy", "Deployment started");
+bunnyLog.log("build", "Build completed");
+bunnyLog.log("test", "Tests passing");
 
 // 🆕 Create your own clean logger!
 console.log("\n=== 🧹 Custom Clean Instance ===");
@@ -42,9 +54,9 @@ const myLogger = BunnyLogger.clean()  // No default categories
 	.hex("db", "#4ecdc4")
 	.hex("cache", "#ffe66d");
 
-myLogger.app("My app is running");
-myLogger.db("Database connected");
-myLogger.cache("Cache cleared");
+myLogger.log("app", "My app is running");
+myLogger.log("db", "Database connected");
+myLogger.log("cache", "Cache cleared");
 
 console.log("My logger categories:", myLogger.getCategories());
 
@@ -56,15 +68,15 @@ const apiLogger = new BunnyLogger(false)  // Clean start
 	.hex("error", "#ef476f")
 	.hex("middleware", "#ffd166");
 
-apiLogger.request("GET /api/users");
-apiLogger.middleware("Auth middleware passed");
-apiLogger.response("200 OK - Users fetched");
+apiLogger.log("request", "GET /api/users");
+apiLogger.log("middleware", "Auth middleware passed");
+apiLogger.log("response", "200 OK - Users fetched");
 
 // 🛠️ Change colors dynamically
 console.log("\n=== 🎛️ Dynamic Color Changes ===");
-bunnyLog.info("Info with blue color");
+bunnyLog.log("info", "Info with blue color");
 bunnyLog.setHex("info", "#ff6b35");  // Change to orange
-bunnyLog.info("Same category, now orange!");
+bunnyLog.log("info", "Same category, now orange!");
 
 // 🗑️ Remove categories
 bunnyLog.removeCategory("myCustomCategory");
@@ -72,48 +84,55 @@ console.log("After removal:", bunnyLog.getCategories());
 
 // ⏰ Time Format Configuration
 console.log("\n=== ⏰ Time Format Configuration ===");
-bunnyLog.info("Default 24-hour format with seconds");
+bunnyLog.log("info", "Default 24-hour format with seconds");
 
 // Switch to 12-hour format
 bunnyLog.use12HourFormat();
-bunnyLog.info("Now using 12-hour format");
-bunnyLog.success("12h format works for all categories");
+bunnyLog.log("info", "Now using 12-hour format");
+bunnyLog.log("success", "12h format works for all categories");
 
 // Hide seconds from timestamps
 bunnyLog.hideSecondsInTime();
-bunnyLog.info("12h format without seconds");
-bunnyLog.warn("Notice: no seconds displayed");
+bunnyLog.log("info", "12h format without seconds");
+bunnyLog.log("warn", "Notice: no seconds displayed");
 
 // Show seconds again
 bunnyLog.showSecondsInTime();
-bunnyLog.info("12h format with seconds restored");
+bunnyLog.log("info", "12h format with seconds restored");
 
 // Switch back to 24-hour format
 bunnyLog.use24HourFormat();
-bunnyLog.info("Back to 24h format");
-bunnyLog.warn("24h format restored");
+bunnyLog.log("info", "Back to 24h format");
+bunnyLog.log("warn", "24h format restored");
 
-// Test chaining with both time format and seconds
-bunnyLog.setTimeFormat('12h').setShowSeconds(false);
-bunnyLog.hex("time", "#FFD700").time("Chained: 12h without seconds");
+// Test chaining with both time format, seconds, and text color
+bunnyLog
+	.setTimeFormat('12h')
+	.setShowSeconds(false)
+	.enableTextColor();
+bunnyLog.hex("time", "#FFD700").log("time", "Chained: 12h without seconds, colored text");
 
-bunnyLog.setTimeFormat('24h').setShowSeconds(true);
-bunnyLog.hex("time", "#FFD700").time("Chained: 24h with seconds");
+bunnyLog
+	.setTimeFormat('24h')
+	.setShowSeconds(true)
+	.disableTextColor();
+bunnyLog.hex("time", "#FFD700").log("time", "Chained: 24h with seconds, plain text");
 
 // Check current settings
 console.log("Current time format:", bunnyLog.getTimeFormat());
 console.log("Show seconds:", bunnyLog.getShowSeconds());
+console.log("Text coloring:", bunnyLog.getTextColor());
 
 // Show with custom logger too
 const timeLogger = BunnyLogger.clean()
 	.hex("morning", "#FFA500")
 	.hex("evening", "#4B0082");
 
-timeLogger.use12HourFormat().hideSecondsInTime();
-timeLogger.morning("Custom logger: 12h without seconds");
+timeLogger.use12HourFormat().hideSecondsInTime().enableTextColor();
+timeLogger.log("morning", "Custom logger: 12h without seconds, colored text");
 
-timeLogger.use24HourFormat().showSecondsInTime();
-timeLogger.evening("Custom logger: 24h with seconds");
+timeLogger.use24HourFormat().showSecondsInTime().disableTextColor();
+timeLogger.log("evening", "Custom logger: 24h with seconds, plain text");
 
 // 📊 Complex object with colors
 console.log("\n=== 📊 Complex Data Structures ===");
@@ -136,14 +155,14 @@ const complexData = {
 	}
 };
 
-bunnyLog.hex("data", "#a8dadc").data("Complex user data:", complexData);
+bunnyLog.hex("data", "#a8dadc").log("data", "Complex user data:", complexData);
 
 // 🎯 Error handling with colors
 console.log("\n=== 🚨 Error Handling ===");
 try {
 	throw new Error("Something broke in the payment system");
 } catch (error) {
-	bunnyLog.hex("critical", "#ff006e").critical("Critical error:", error);
+	bunnyLog.hex("critical", "#ff006e").log("critical", "Critical error:", error);
 }
 
 // 📋 Tables with different loggers
@@ -213,12 +232,12 @@ createSimpleTable();
 createColoredTable();
 
 console.log("\n=== 🎉 Summary ===");
-console.log("✅ Auto-categories: bunnyLog.anyName() just works!");
+console.log("✅ Auto-categories with smart colors: logger.log('info', 'message')");
+console.log("🎨 Text coloring: .enableTextColor() / .disableTextColor()");
 console.log("🎨 Hex colors: bunnyLog.hex('name', '#color')");
 console.log("🧹 Clean instances: BunnyLogger.clean()");
 console.log("🔗 Chainable: .hex().rgb().setColor()");
 console.log("⏰ Time formats: .use12HourFormat() and .use24HourFormat()");
 console.log("⏱️  Seconds control: .showSecondsInTime() and .hideSecondsInTime()");
-console.log("🎯 TypeScript: Suggests known categories + any custom ones");
 
 console.log("\n=== 🐰 BunnyLog Complete! ===");

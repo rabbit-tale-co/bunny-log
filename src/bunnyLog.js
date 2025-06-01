@@ -6,7 +6,7 @@ import chalk from "chalk";
  * BunnyLogger - Class-based Console Logging Package with Auto-Categories
  */
 export class BunnyLogger {
-	constructor(defaultCategories = true) {
+	constructor(defaultCategories = false) {
 		// Map of log categories to their respective chalk color functions
 		this.categoryColors = new Map();
 
@@ -16,37 +16,77 @@ export class BunnyLogger {
 		// Seconds display configuration
 		this.showSeconds = true; // default to showing seconds
 
-		// Initialize default categories if requested
+		// Text coloring configuration
+		this.colorText = false; // default to not coloring the message text
+
+		// No default categories - keep it clean and simple
+		// Categories will be auto-created when first used
+
+		// Initialize default logging methods only if requested
 		if (defaultCategories) {
-			this.categoryColors.set("server", chalk.green);
-			this.categoryColors.set("database", chalk.yellow);
-			this.categoryColors.set("error", chalk.red);
+			// Only add if explicitly requested
 			this.categoryColors.set("info", chalk.blue);
-			this.categoryColors.set("success", chalk.greenBright);
-			this.categoryColors.set("warn", chalk.hex("#F8A85E"));
-			this.categoryColors.set("api", chalk.magenta);
+			this.categoryColors.set("error", chalk.red);
+			this.categoryColors.set("warn", chalk.yellow);
+			this.categoryColors.set("success", chalk.green);
 		}
 
-		// Initialize default logging methods
+		// Initialize methods for existing categories
 		this.initializeDefaultMethods();
 
 		// Return a Proxy to intercept property access
 		return new Proxy(this, {
 			get(target, prop) {
-				// If property exists, return it
+				// If property exists, return it (but bind functions to preserve context)
 				if (prop in target || typeof prop === 'symbol') {
-					return target[prop];
+					const value = target[prop];
+					return typeof value === 'function' ? value.bind(target) : value;
 				}
 
 				// If it's a string and looks like a logging method, create it
 				if (typeof prop === 'string') {
 					// Auto-create category if it doesn't exist
 					if (!target.categoryColors.has(prop)) {
-						target.categoryColors.set(prop, chalk.white);
+						// Assign appropriate colors for common category names
+						let color = chalk.white; // default
+						switch (prop.toLowerCase()) {
+							case 'info':
+								color = chalk.blue;
+								break;
+							case 'error':
+								color = chalk.red;
+								break;
+							case 'warn':
+							case 'warning':
+								color = chalk.yellow;
+								break;
+							case 'success':
+								color = chalk.green;
+								break;
+							case 'debug':
+								color = chalk.magenta;
+								break;
+							case 'server':
+								color = chalk.cyan;
+								break;
+							case 'database':
+							case 'db':
+								color = chalk.blueBright;
+								break;
+							case 'api':
+								color = chalk.magentaBright;
+								break;
+							default:
+								color = chalk.white;
+						}
+						target.categoryColors.set(prop, color);
 					}
 
-					// Return logging function for this category
-					return (...args) => target.log(prop, ...args);
+					// Return logging function for this category that returns the logger instance
+					return (...args) => {
+						target.log(prop, ...args);
+						return target; // Return the target (logger instance) for chaining
+					};
 				}
 
 				return target[prop];
@@ -60,7 +100,10 @@ export class BunnyLogger {
 	initializeDefaultMethods() {
 		const categories = Array.from(this.categoryColors.keys());
 		categories.forEach(category => {
-			this[category] = (...args) => this.log(category, ...args);
+			this[category] = (...args) => {
+				this.log(category, ...args);
+				return this; // Return this for chaining
+			};
 		});
 	}
 
@@ -87,6 +130,42 @@ export class BunnyLogger {
 	 * Main logging function with colors
 	 */
 	log(category, ...args) {
+		// Auto-assign appropriate colors for common category names if they don't exist
+		if (!this.categoryColors.has(category)) {
+			let color = chalk.white; // default
+			switch (category.toLowerCase()) {
+				case 'info':
+					color = chalk.blue;
+					break;
+				case 'error':
+					color = chalk.red;
+					break;
+				case 'warn':
+				case 'warning':
+					color = chalk.yellow;
+					break;
+				case 'success':
+					color = chalk.green;
+					break;
+				case 'debug':
+					color = chalk.magenta;
+					break;
+				case 'server':
+					color = chalk.cyan;
+					break;
+				case 'database':
+				case 'db':
+					color = chalk.blueBright;
+					break;
+				case 'api':
+					color = chalk.magentaBright;
+					break;
+				default:
+					color = chalk.white;
+			}
+			this.categoryColors.set(category, color);
+		}
+
 		const color = this.categoryColors.get(category) || chalk.white;
 		const timestamp = this.getTimestamp();
 
@@ -102,7 +181,10 @@ export class BunnyLogger {
 			})
 			.join(" ");
 
-		const logMessage = `${timestamp} | [${color(category.toUpperCase())}] - ${formattedMessage}`;
+		// Apply text coloring if enabled
+		const finalMessage = this.colorText ? color(formattedMessage) : formattedMessage;
+
+		const logMessage = `${timestamp} | [${color(category.toUpperCase())}] - ${finalMessage}`;
 
 		// Use appropriate console method based on category
 		switch (category) {
@@ -123,6 +205,9 @@ export class BunnyLogger {
 				console.log(logMessage);
 				break;
 		}
+
+		// Return this for method chaining
+		return this;
 	}
 
 	/**
@@ -194,6 +279,38 @@ export class BunnyLogger {
 	}
 
 	/**
+	 * Set whether to color the message text with category color
+	 * @param {boolean} enabled - Whether to color message text
+	 */
+	setTextColor(enabled) {
+		this.colorText = Boolean(enabled);
+		return this;
+	}
+
+	/**
+	 * Get current text coloring setting
+	 */
+	getTextColor() {
+		return this.colorText;
+	}
+
+	/**
+	 * Enable text coloring (convenience method)
+	 */
+	enableTextColor() {
+		this.colorText = true;
+		return this;
+	}
+
+	/**
+	 * Disable text coloring (convenience method)
+	 */
+	disableTextColor() {
+		this.colorText = false;
+		return this;
+	}
+
+	/**
 	 * Colorize JSON objects for pretty output
 	 */
 	colorizeJson(obj, indent = 0) {
@@ -229,20 +346,14 @@ export class BunnyLogger {
 	}
 
 	/**
-	 * Add a new logging category with chalk color or hex
-	 */
-	addCategory(category, color = chalk.white) {
-		this.categoryColors.set(category, color);
-		this[category] = (...args) => this.log(category, ...args);
-		return this;
-	}
-
-	/**
 	 * Add category with hex color (easier syntax)
 	 */
 	hex(category, hexColor) {
 		this.categoryColors.set(category, chalk.hex(hexColor));
-		this[category] = (...args) => this.log(category, ...args);
+		this[category] = (...args) => {
+			this.log(category, ...args);
+			return this; // Return this for chaining
+		};
 		return this;
 	}
 
@@ -251,7 +362,10 @@ export class BunnyLogger {
 	 */
 	rgb(category, r, g, b) {
 		this.categoryColors.set(category, chalk.rgb(r, g, b));
-		this[category] = (...args) => this.log(category, ...args);
+		this[category] = (...args) => {
+			this.log(category, ...args);
+			return this; // Return this for chaining
+		};
 		return this;
 	}
 
@@ -274,6 +388,7 @@ export class BunnyLogger {
 		}
 
 		this.log("table", tableData);
+		return this;
 	}
 
 	/**
@@ -287,9 +402,7 @@ export class BunnyLogger {
 	 * Set color for existing category
 	 */
 	setColor(category, color) {
-		if (this.categoryColors.has(category)) {
-			this.categoryColors.set(category, color);
-		}
+		this.categoryColors.set(category, color);
 		return this;
 	}
 
@@ -297,9 +410,8 @@ export class BunnyLogger {
 	 * Set hex color for existing category
 	 */
 	setHex(category, hexColor) {
-		if (this.categoryColors.has(category)) {
-			this.categoryColors.set(category, chalk.hex(hexColor));
-		}
+		this.categoryColors.set(category, chalk.hex(hexColor));
+		// Ensure the dynamic method is available after setting color
 		return this;
 	}
 
@@ -320,5 +432,5 @@ export class BunnyLogger {
 	}
 }
 
-// Export singleton instance with default categories
+// Export singleton instance - clean with no default categories
 export const bunnyLog = new BunnyLogger();
