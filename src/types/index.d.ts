@@ -1,4 +1,4 @@
-import type { Chalk } from 'chalk';
+import type { ChalkInstance } from 'chalk';
 
 /**
  * Represents a valid JSON value, which can be a string, number, boolean, null, object, or array.
@@ -84,7 +84,7 @@ export declare class BunnyLogger {
 	 * @param color - A chalk color function to style the category label.
 	 * @returns The BunnyLogger instance for chaining
 	 */
-	addCategory(category: string, color?: Chalk): this
+	addCategory(category: string, color?: ChalkInstance): this
 
 	/**
 	 * Add category with hex color (easier syntax)
@@ -128,7 +128,7 @@ export declare class BunnyLogger {
 	 * @param color - The chalk color function
 	 * @returns The BunnyLogger instance for chaining
 	 */
-	setColor(category: string, color: Chalk): this
+	setColor(category: string, color: ChalkInstance): this
 
 	/**
 	 * Set hex color for an existing category
@@ -146,6 +146,62 @@ export declare class BunnyLogger {
 	 * @returns The BunnyLogger instance for chaining
 	 */
 	removeCategory(category: string): this
+
+	/**
+	 * Set time format for timestamps
+	 * @param format - Either '12h' or '24h'
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	setTimeFormat(format: '12h' | '24h'): this
+
+	/**
+	 * Get current time format
+	 * @returns Current time format ('12h' or '24h')
+	 */
+	getTimeFormat(): '12h' | '24h'
+
+	/**
+	 * Set to 12-hour format (convenience method)
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	use12HourFormat(): this
+
+	/**
+	 * Set to 24-hour format (convenience method)
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	use24HourFormat(): this
+
+	/**
+	 * Get formatted timestamp based on current time format setting
+	 * @returns Formatted timestamp string with chalk styling
+	 */
+	getTimestamp(): string
+
+	/**
+	 * Set whether to show seconds in timestamps
+	 * @param show - Whether to show seconds
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	setShowSeconds(show: boolean): this
+
+	/**
+	 * Get current seconds display setting
+	 * @returns Whether seconds are currently shown
+	 */
+	getShowSeconds(): boolean
+
+	/**
+	 * Show seconds in timestamps (convenience method)
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	showSecondsInTime(): this
+
+	/**
+	 * Hide seconds in timestamps (convenience method)
+	 * @returns The BunnyLogger instance for chaining
+	 */
+	hideSecondsInTime(): this
 
 	/**
 	 * Colorize JSON objects for pretty output

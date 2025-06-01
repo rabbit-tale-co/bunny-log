@@ -10,6 +10,12 @@ export class BunnyLogger {
 		// Map of log categories to their respective chalk color functions
 		this.categoryColors = new Map();
 
+		// Time format configuration (12h or 24h)
+		this.timeFormat = '24h'; // default to 24-hour format
+
+		// Seconds display configuration
+		this.showSeconds = true; // default to showing seconds
+
 		// Initialize default categories if requested
 		if (defaultCategories) {
 			this.categoryColors.set("server", chalk.green);
@@ -59,11 +65,30 @@ export class BunnyLogger {
 	}
 
 	/**
+	 * Get formatted timestamp based on current time format setting
+	 */
+	getTimestamp() {
+		const use12Hour = this.timeFormat === '12h';
+		const timeOptions = {
+			hour12: use12Hour,
+			hour: '2-digit',
+			minute: '2-digit'
+		};
+
+		// Add seconds if enabled
+		if (this.showSeconds) {
+			timeOptions.second = '2-digit';
+		}
+
+		return chalk.gray(new Date().toLocaleTimeString("en-US", timeOptions));
+	}
+
+	/**
 	 * Main logging function with colors
 	 */
 	log(category, ...args) {
 		const color = this.categoryColors.get(category) || chalk.white;
-		const timestamp = chalk.gray(new Date().toLocaleTimeString("en-US", { hour12: false }));
+		const timestamp = this.getTimestamp();
 
 		const formattedMessage = args
 			.map((arg) => {
@@ -98,6 +123,74 @@ export class BunnyLogger {
 				console.log(logMessage);
 				break;
 		}
+	}
+
+	/**
+	 * Set time format for timestamps
+	 * @param {string} format - Either '12h' or '24h'
+	 */
+	setTimeFormat(format) {
+		if (format === '12h' || format === '24h') {
+			this.timeFormat = format;
+		} else {
+			throw new Error("Time format must be '12h' or '24h'");
+		}
+		return this;
+	}
+
+	/**
+	 * Get current time format
+	 */
+	getTimeFormat() {
+		return this.timeFormat;
+	}
+
+	/**
+	 * Set to 12-hour format (convenience method)
+	 */
+	use12HourFormat() {
+		this.timeFormat = '12h';
+		return this;
+	}
+
+	/**
+	 * Set to 24-hour format (convenience method)
+	 */
+	use24HourFormat() {
+		this.timeFormat = '24h';
+		return this;
+	}
+
+	/**
+	 * Set whether to show seconds in timestamps
+	 * @param {boolean} show - Whether to show seconds
+	 */
+	setShowSeconds(show) {
+		this.showSeconds = Boolean(show);
+		return this;
+	}
+
+	/**
+	 * Get current seconds display setting
+	 */
+	getShowSeconds() {
+		return this.showSeconds;
+	}
+
+	/**
+	 * Show seconds in timestamps (convenience method)
+	 */
+	showSecondsInTime() {
+		this.showSeconds = true;
+		return this;
+	}
+
+	/**
+	 * Hide seconds in timestamps (convenience method)
+	 */
+	hideSecondsInTime() {
+		this.showSeconds = false;
+		return this;
 	}
 
 	/**

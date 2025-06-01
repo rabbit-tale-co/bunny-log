@@ -70,6 +70,51 @@ bunnyLog.info("Same category, now orange!");
 bunnyLog.removeCategory("myCustomCategory");
 console.log("After removal:", bunnyLog.getCategories());
 
+// ⏰ Time Format Configuration
+console.log("\n=== ⏰ Time Format Configuration ===");
+bunnyLog.info("Default 24-hour format with seconds");
+
+// Switch to 12-hour format
+bunnyLog.use12HourFormat();
+bunnyLog.info("Now using 12-hour format");
+bunnyLog.success("12h format works for all categories");
+
+// Hide seconds from timestamps
+bunnyLog.hideSecondsInTime();
+bunnyLog.info("12h format without seconds");
+bunnyLog.warn("Notice: no seconds displayed");
+
+// Show seconds again
+bunnyLog.showSecondsInTime();
+bunnyLog.info("12h format with seconds restored");
+
+// Switch back to 24-hour format
+bunnyLog.use24HourFormat();
+bunnyLog.info("Back to 24h format");
+bunnyLog.warn("24h format restored");
+
+// Test chaining with both time format and seconds
+bunnyLog.setTimeFormat('12h').setShowSeconds(false);
+bunnyLog.hex("time", "#FFD700").time("Chained: 12h without seconds");
+
+bunnyLog.setTimeFormat('24h').setShowSeconds(true);
+bunnyLog.hex("time", "#FFD700").time("Chained: 24h with seconds");
+
+// Check current settings
+console.log("Current time format:", bunnyLog.getTimeFormat());
+console.log("Show seconds:", bunnyLog.getShowSeconds());
+
+// Show with custom logger too
+const timeLogger = BunnyLogger.clean()
+	.hex("morning", "#FFA500")
+	.hex("evening", "#4B0082");
+
+timeLogger.use12HourFormat().hideSecondsInTime();
+timeLogger.morning("Custom logger: 12h without seconds");
+
+timeLogger.use24HourFormat().showSecondsInTime();
+timeLogger.evening("Custom logger: 24h with seconds");
+
 // 📊 Complex object with colors
 console.log("\n=== 📊 Complex Data Structures ===");
 const complexData = {
@@ -172,6 +217,8 @@ console.log("✅ Auto-categories: bunnyLog.anyName() just works!");
 console.log("🎨 Hex colors: bunnyLog.hex('name', '#color')");
 console.log("🧹 Clean instances: BunnyLogger.clean()");
 console.log("🔗 Chainable: .hex().rgb().setColor()");
+console.log("⏰ Time formats: .use12HourFormat() and .use24HourFormat()");
+console.log("⏱️  Seconds control: .showSecondsInTime() and .hideSecondsInTime()");
 console.log("🎯 TypeScript: Suggests known categories + any custom ones");
 
 console.log("\n=== 🐰 BunnyLog Complete! ===");

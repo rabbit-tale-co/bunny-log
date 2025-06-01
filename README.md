@@ -202,6 +202,53 @@ bunnyLog.removeCategory("old-category");
 14:32:19 | [INFO] - Now orange!                   (in orange #ff6b35)
 ```
 
+### ⏰ Time Format Configuration
+
+```javascript
+// Default is 24-hour format with seconds
+bunnyLog.info("Default 24h format with seconds");
+
+// Switch to 12-hour format
+bunnyLog.use12HourFormat();
+bunnyLog.info("Now using 12h format");
+
+// Hide seconds from timestamps
+bunnyLog.hideSecondsInTime();
+bunnyLog.info("12h format without seconds");
+
+// Show seconds again
+bunnyLog.showSecondsInTime();
+bunnyLog.info("12h format with seconds");
+
+// Switch back to 24-hour format
+bunnyLog.use24HourFormat();
+bunnyLog.info("Back to 24h format");
+
+// Or use the general setters
+bunnyLog.setTimeFormat('12h').setShowSeconds(false);
+bunnyLog.success("Chained: 12h without seconds");
+
+bunnyLog.setTimeFormat('24h').setShowSeconds(true);
+bunnyLog.success("Chained: 24h with seconds");
+
+// Check current settings
+console.log("Current format:", bunnyLog.getTimeFormat());
+console.log("Show seconds:", bunnyLog.getShowSeconds());
+```
+
+**Output:**
+```
+14:32:20 | [INFO] - Default 24h format with seconds
+2:32:20 PM | [INFO] - Now using 12h format
+2:32 PM | [INFO] - 12h format without seconds
+2:32:20 PM | [INFO] - 12h format with seconds
+14:32:20 | [INFO] - Back to 24h format
+2:32 PM | [SUCCESS] - Chained: 12h without seconds
+14:32:20 | [SUCCESS] - Chained: 24h with seconds
+Current format: 24h
+Show seconds: true
+```
+
 ## 🛠️ Development
 
 ### Building with Bun
@@ -263,6 +310,19 @@ new BunnyLogger(defaultCategories?: boolean)
 .getCategories(): string[]
 .table(data: object[], options?: TableOptions): void
 
+// Time Format Methods
+.setTimeFormat(format: '12h' | '24h'): this
+.getTimeFormat(): '12h' | '24h'
+.use12HourFormat(): this
+.use24HourFormat(): this
+.getTimestamp(): string
+
+// Seconds Display Methods
+.setShowSeconds(show: boolean): this
+.getShowSeconds(): boolean
+.showSecondsInTime(): this
+.hideSecondsInTime(): this
+
 // Static
 BunnyLogger.clean(): BunnyLogger
 ```
@@ -300,7 +360,7 @@ const logger: BunnyLogger = new BunnyLogger();
 
 ## 📄 License
 
-MIT © [Your Name]
+MIT © Hasiradoo - RabbitTale Studio
 
 ## 🤝 Contributing
 

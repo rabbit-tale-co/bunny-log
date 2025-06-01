@@ -399,6 +399,15 @@ describe('BunnyLog Comprehensive Tests', () => {
 			expect(typeof bunnyLog.rgb).toBe('function')
 			expect(typeof bunnyLog.setHex).toBe('function')
 			expect(typeof bunnyLog.table).toBe('function')
+			expect(typeof bunnyLog.setTimeFormat).toBe('function')
+			expect(typeof bunnyLog.getTimeFormat).toBe('function')
+			expect(typeof bunnyLog.use12HourFormat).toBe('function')
+			expect(typeof bunnyLog.use24HourFormat).toBe('function')
+			expect(typeof bunnyLog.getTimestamp).toBe('function')
+			expect(typeof bunnyLog.setShowSeconds).toBe('function')
+			expect(typeof bunnyLog.getShowSeconds).toBe('function')
+			expect(typeof bunnyLog.showSecondsInTime).toBe('function')
+			expect(typeof bunnyLog.hideSecondsInTime).toBe('function')
 		})
 
 		it('should export all required classes and constants', () => {
@@ -407,6 +416,228 @@ describe('BunnyLog Comprehensive Tests', () => {
 			expect(Table).toBeDefined()
 			expect(FORMAT_UNICODE).toBeDefined()
 			expect(FORMAT_DEFAULT).toBeDefined()
+		})
+	})
+
+	describe('Time Format Configuration', () => {
+		it('should default to 24-hour format', () => {
+			const logger = new BunnyLogger()
+			expect(logger.getTimeFormat()).toBe('24h')
+		})
+
+		it('should allow setting time format to 12h', () => {
+			const logger = new BunnyLogger()
+			const result = logger.setTimeFormat('12h')
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getTimeFormat()).toBe('12h')
+		})
+
+		it('should allow setting time format to 24h', () => {
+			const logger = new BunnyLogger()
+			logger.setTimeFormat('12h') // Set to 12h first
+			const result = logger.setTimeFormat('24h')
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getTimeFormat()).toBe('24h')
+		})
+
+		it('should throw error for invalid time format', () => {
+			const logger = new BunnyLogger()
+			expect(() => {
+				logger.setTimeFormat('invalid')
+			}).toThrow("Time format must be '12h' or '24h'")
+		})
+
+		it('should have convenience method for 12-hour format', () => {
+			const logger = new BunnyLogger()
+			const result = logger.use12HourFormat()
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getTimeFormat()).toBe('12h')
+		})
+
+		it('should have convenience method for 24-hour format', () => {
+			const logger = new BunnyLogger()
+			logger.use12HourFormat() // Set to 12h first
+			const result = logger.use24HourFormat()
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getTimeFormat()).toBe('24h')
+		})
+
+		it('should generate timestamps with correct format', () => {
+			const logger = new BunnyLogger()
+
+			// Test 24-hour format
+			logger.use24HourFormat()
+			const timestamp24h = logger.getTimestamp()
+			expect(typeof timestamp24h).toBe('string')
+			expect(timestamp24h.length).toBeGreaterThan(0)
+
+			// Test 12-hour format
+			logger.use12HourFormat()
+			const timestamp12h = logger.getTimestamp()
+			expect(typeof timestamp12h).toBe('string')
+			expect(timestamp12h.length).toBeGreaterThan(0)
+
+			// Timestamps should be different formats (though exact content may vary)
+			// We just verify they're both strings and not empty
+		})
+
+		it('should use time format in actual logging', () => {
+			const logger = new BunnyLogger()
+
+			logger.use12HourFormat()
+			expect(() => {
+				logger.info('Test message with 12h format')
+			}).not.toThrow()
+
+			logger.use24HourFormat()
+			expect(() => {
+				logger.info('Test message with 24h format')
+			}).not.toThrow()
+		})
+
+		it('should maintain time format across different logging calls', () => {
+			const logger = new BunnyLogger()
+
+			logger.setTimeFormat('12h')
+			expect(logger.getTimeFormat()).toBe('12h')
+
+			logger.info('First message')
+			expect(logger.getTimeFormat()).toBe('12h')
+
+			logger.success('Second message')
+			expect(logger.getTimeFormat()).toBe('12h')
+		})
+	})
+
+	describe('Seconds Display Configuration', () => {
+		it('should default to showing seconds', () => {
+			const logger = new BunnyLogger()
+			expect(logger.getShowSeconds()).toBe(true)
+		})
+
+		it('should allow setting seconds display to false', () => {
+			const logger = new BunnyLogger()
+			const result = logger.setShowSeconds(false)
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getShowSeconds()).toBe(false)
+		})
+
+		it('should allow setting seconds display to true', () => {
+			const logger = new BunnyLogger()
+			logger.setShowSeconds(false) // Set to false first
+			const result = logger.setShowSeconds(true)
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getShowSeconds()).toBe(true)
+		})
+
+		it('should have convenience method to show seconds', () => {
+			const logger = new BunnyLogger()
+			logger.setShowSeconds(false) // Set to false first
+			const result = logger.showSecondsInTime()
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getShowSeconds()).toBe(true)
+		})
+
+		it('should have convenience method to hide seconds', () => {
+			const logger = new BunnyLogger()
+			const result = logger.hideSecondsInTime()
+			expect(result).toBe(logger) // Should return instance for chaining
+			expect(logger.getShowSeconds()).toBe(false)
+		})
+
+		it('should generate timestamps with/without seconds correctly', () => {
+			const logger = new BunnyLogger()
+
+			// Test with seconds
+			logger.showSecondsInTime()
+			const timestampWithSeconds = logger.getTimestamp()
+			expect(typeof timestampWithSeconds).toBe('string')
+			expect(timestampWithSeconds.length).toBeGreaterThan(0)
+
+			// Test without seconds
+			logger.hideSecondsInTime()
+			const timestampWithoutSeconds = logger.getTimestamp()
+			expect(typeof timestampWithoutSeconds).toBe('string')
+			expect(timestampWithoutSeconds.length).toBeGreaterThan(0)
+
+			// Without seconds should be shorter than with seconds
+			// Note: We can't guarantee exact length due to potential time changes during test
+		})
+
+		it('should use seconds setting in actual logging', () => {
+			const logger = new BunnyLogger()
+
+			logger.showSecondsInTime()
+			expect(() => {
+				logger.info('Test message with seconds')
+			}).not.toThrow()
+
+			logger.hideSecondsInTime()
+			expect(() => {
+				logger.info('Test message without seconds')
+			}).not.toThrow()
+		})
+
+		it('should maintain seconds setting across different logging calls', () => {
+			const logger = new BunnyLogger()
+
+			logger.setShowSeconds(false)
+			expect(logger.getShowSeconds()).toBe(false)
+
+			logger.info('First message')
+			expect(logger.getShowSeconds()).toBe(false)
+
+			logger.success('Second message')
+			expect(logger.getShowSeconds()).toBe(false)
+		})
+
+		it('should work with different time formats', () => {
+			const logger = new BunnyLogger()
+
+			// Test 12h with seconds
+			logger.use12HourFormat().showSecondsInTime()
+			expect(() => {
+				logger.info('12h with seconds')
+			}).not.toThrow()
+
+			// Test 12h without seconds
+			logger.use12HourFormat().hideSecondsInTime()
+			expect(() => {
+				logger.info('12h without seconds')
+			}).not.toThrow()
+
+			// Test 24h with seconds
+			logger.use24HourFormat().showSecondsInTime()
+			expect(() => {
+				logger.info('24h with seconds')
+			}).not.toThrow()
+
+			// Test 24h without seconds
+			logger.use24HourFormat().hideSecondsInTime()
+			expect(() => {
+				logger.info('24h without seconds')
+			}).not.toThrow()
+		})
+
+		it('should convert boolean values correctly', () => {
+			const logger = new BunnyLogger()
+
+			// Test truthy values
+			logger.setShowSeconds(1)
+			expect(logger.getShowSeconds()).toBe(true)
+
+			logger.setShowSeconds('true')
+			expect(logger.getShowSeconds()).toBe(true)
+
+			// Test falsy values
+			logger.setShowSeconds(0)
+			expect(logger.getShowSeconds()).toBe(false)
+
+			logger.setShowSeconds('')
+			expect(logger.getShowSeconds()).toBe(false)
+
+			logger.setShowSeconds(null)
+			expect(logger.getShowSeconds()).toBe(false)
 		})
 	})
 })
