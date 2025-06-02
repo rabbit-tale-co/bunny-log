@@ -1,28 +1,25 @@
 {
   "name": "bunny-log",
-  "version": "2.1.0",
+  "version": "2.1.7",
   "description": "🐰 Beautiful console logging with auto-categories, hex colors, and advanced tables",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
-    },
-    "./table": {
-      "import": "./dist/table/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
     "dist",
+    "index.d.ts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "bun build src/bunnyLog.js --outdir ./dist --target node --minify",
+    "build": "bun run build.ts",
     "test": "bun test tests/bunnyLog.test.js",
     "dev": "bun run example/index.js",
     "clean": "rm -rf dist"
@@ -39,15 +36,15 @@
     "hex-colors",
     "auto-categories"
   ],
-  "author": "Your Name",
+  "author": "Hasiradoo",
   "license": "MIT",
   "dependencies": {
-    "bunny-log": "file:",
     "chalk": "^5.3.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "bun-plugin-dts": "^0.3.0"
   },
   "engines": {
     "node": ">=16.0.0",
